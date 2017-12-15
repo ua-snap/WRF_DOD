@@ -6,7 +6,7 @@ import pandas as pd
 
 app = dash.Dash()
 
-csv = '/Users/julienschroder/Downloads/WRF_extract_GFDL_1970-2100_FAI.csv'
+csv = 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_FAI.csv'
 out_fn = '/workspace/Shared/Users/jschroder/TMP/WRF_extract_GFDL_1970-2100_FAI.csv'
 df = pd.read_csv(csv,index_col = 0)
 df.index = pd.to_datetime(df.index)
