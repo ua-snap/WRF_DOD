@@ -65,7 +65,7 @@ app.layout = html.Div([
      dash.dependencies.Input('temperature', 'value')])
 def update_graph(nb_days,temperature):
 
-    x = df[df.rolling(int(nb_days))['max'].min() <= temperature]
+    x = df[df.rolling(int(nb_days))['max'].max() <= temperature]
     dff = x.groupby(x.index.year)['max'].count().to_frame('occurences')
 
 
