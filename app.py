@@ -49,7 +49,7 @@ app.layout = html.Div([
         html.Div([
             dcc.Dropdown(
                 id='temperature',
-                options=[{'label': 'Temperature below : {} celsius'.format(i), 'value': i} for i in range(0,-40,5)],
+                options=[{'label': 'Temperature below : {} celsius'.format(i), 'value': i} for i in range(0,-40, -5)],
                 value=0
             )
         ],className='six columns')
