@@ -58,7 +58,7 @@ app.layout = html.Div([
     html.Div([
         dcc.Graph(id='indicator-graphic'),
     ],className='eleven columns')
-])
+],className='ten columns offset-by-one')
 @app.callback(
     dash.dependencies.Output('indicator-graphic', 'figure'),
     [dash.dependencies.Input('nb_days', 'value'),
