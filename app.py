@@ -1,9 +1,13 @@
-import dash
+import dash, flask
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 import pandas as pd
 
+server = flask.Flask(__name__)
+server.secret_key = os.environ.get('secret_key', 'secret')
+app = dash.Dash(name = __name__, server = server)
+app.config.supress_callback_exceptions = True
 app = dash.Dash()
 
 csv = 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_FAI.csv'
@@ -84,4 +88,4 @@ def update_graph(nb_days,temperature):
 
 
 if __name__ == '__main__':
-    app.run_server()
+    app.server.run()
