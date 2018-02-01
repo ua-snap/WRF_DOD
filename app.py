@@ -10,7 +10,7 @@ app = dash.Dash(name = __name__, server = server)
 app.config.supress_callback_exceptions = True
 
 
-csv = 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Fairbanksv2.csv'
+csv = 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Greelyv2.csv'
 
 df = pd.read_csv(csv,index_col = 0)
 df.index = pd.to_datetime(df.index)
