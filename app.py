@@ -9,11 +9,11 @@ server.secret_key = os.environ.get('secret_key', 'secret')
 app = dash.Dash(name = __name__, server = server)
 app.config.supress_callback_exceptions = True
 
-
-csv = 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Greelyv2.csv'
-
-df = pd.read_csv(csv,index_col = 0)
-df.index = pd.to_datetime(df.index)
+links = {
+    'Fairbanks' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Fairbanksv2.csv',
+    'Greely' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Greelyv2.csv'
+    }
+    
 temp = ('C1 : 0 to -25','C2 : -25.1 to -50','C3 : colder than -50')
 values = (0 , -25 , -40 )
 
@@ -51,6 +51,12 @@ app.layout = html.Div([
                 id='temperature',
                 options=[{'label': 'Temperature below : {} celsius'.format(i), 'value': i} for i in range(0,-40, -5)],
                 value=0
+            ),
+        html.Div([
+            dcc.Dropdown(
+                id='location',
+                options=[{'label': 'Location: {}'.format(i), 'value': i} for i in loc)],
+                value=2
             )
         ],className='six columns')
 
@@ -62,11 +68,15 @@ app.layout = html.Div([
 @app.callback(
     dash.dependencies.Output('indicator-graphic', 'figure'),
     [dash.dependencies.Input('nb_days', 'value'),
-     dash.dependencies.Input('temperature', 'value')])
-def update_graph(nb_days,temperature):
-
-    x = df[df.rolling(int(nb_days))['max'].max() <= temperature]
-    dff = x.groupby(x.index.year)['max'].count().to_frame('occurences')
+     dash.dependencies.Input('temperature', 'value'),
+     dash.dependencies.Input('location', 'value')])
+     
+def update_graph(nb_days, temperature, location):
+    
+    df = pd.read_csv( links[ location ] , index_col = 0 )
+    df.index = pd.to_datetime( df.index )
+    x = df[df.rolling( int( nb_days ))[ 'max' ].max() <= temperature ]
+    dff = x.groupby( x.index.year )[ 'max' ].count().to_frame( 'occurences' )
 
 
     return {
