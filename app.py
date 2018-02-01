@@ -9,7 +9,7 @@ server = flask.Flask(__name__)
 server.secret_key = os.environ.get('secret_key', 'secret')
 app = dash.Dash(name = __name__, server = server)
 app.config.supress_callback_exceptions = True
-dic = pickle.load( open( '/Users/julienschroder/Downloads/WRF_DOD-master/WRF_extract_GFDL_1970-2100_multiloc_dod.p', "rb" ) )
+dic = pickle.load( open( 'WRF_extract_GFDL_1970-2100_multiloc_dod.p', "rb" ) )
 # links = {
 #     'Fairbanks' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_FAI.csv',
 #     'Greely' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Greelyv2.csv',
