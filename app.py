@@ -3,17 +3,20 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 import pandas as pd
+import pickle
 
 server = flask.Flask(__name__)
 server.secret_key = os.environ.get('secret_key', 'secret')
 app = dash.Dash(name = __name__, server = server)
 app.config.supress_callback_exceptions = True
+dic = pickle.load( open( '/Users/julienschroder/Downloads/WRF_DOD-master/WRF_extract_GFDL_1970-2100_multiloc_dod.p', "rb" ) )
+# links = {
+#     'Fairbanks' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_FAI.csv',
+#     'Greely' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Greelyv2.csv',
+#     'Coldfoot' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Greelyv2.csv',
+#     'Whitehorse' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Greelyv2.csv'
+    # }
 
-links = {
-    'Fairbanks' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Fairbanksv2.csv',
-    'Greely' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Greelyv2.csv'
-    }
-    
 temp = ('C1 : 0 to -25','C2 : -25.1 to -50','C3 : colder than -50')
 values = (0 , -25 , -40 )
 
@@ -38,42 +41,45 @@ app.layout = html.Div([
         ],
         className='row'
     ),
-    html.Div([
-        html.Div([
-            dcc.Dropdown(
-                id='nb_days',
-                options=[{'label': 'Consecutive days : {}'.format(i), 'value': i} for i in range(10)],
-                value=2
-            ),
-        ],className='six columns'),
-        html.Div([
-            dcc.Dropdown(
-                id='temperature',
-                options=[{'label': 'Temperature below : {} celsius'.format(i), 'value': i} for i in range(0,-40, -5)],
-                value=0
-            ),
-        html.Div([
-            dcc.Dropdown(
-                id='location',
-                options=[{'label': 'Location: {}'.format(i), 'value': i} for i in loc)],
-                value=2
-            )
-        ],className='six columns')
 
-    ]),
-    html.Div([
-        dcc.Graph(id='indicator-graphic'),
-    ],className='eleven columns')
-],className='ten columns offset-by-one')
+     html.Div([
+         html.Div([
+             dcc.Dropdown(
+                 id='nb_days',
+                 options=[{'label': 'Consecutive days : {}'.format(i), 'value': i} for i in range(10)],
+                 value=2
+             ),
+         ],className='three columns'),
+         html.Div([
+             dcc.Dropdown(
+                 id='temperature',
+                 options=[{'label': 'Temperature below : {} celsius'.format(i), 'value': i} for i in range(0,-40, -5)],
+                 value=0
+             )
+         ],className='three columns'),
+          html.Div([
+              dcc.Dropdown(
+                id='location',
+                options=[{'label': 'Location: {}'.format(i), 'value': i} for i in dic.keys() ],
+                value='Greely'
+              )
+          ],className='three columns'),
+
+     ]),
+     html.Div([
+         dcc.Graph(id='indicator-graphic'),
+     ],className='eleven columns')
+ ],className='ten columns offset-by-one')
 @app.callback(
     dash.dependencies.Output('indicator-graphic', 'figure'),
     [dash.dependencies.Input('nb_days', 'value'),
      dash.dependencies.Input('temperature', 'value'),
      dash.dependencies.Input('location', 'value')])
-     
+
 def update_graph(nb_days, temperature, location):
-    
-    df = pd.read_csv( links[ location ] , index_col = 0 )
+
+    df = dic[ location ]
+    print(df)
     df.index = pd.to_datetime( df.index )
     x = df[df.rolling( int( nb_days ))[ 'max' ].max() <= temperature ]
     dff = x.groupby( x.index.year )[ 'max' ].count().to_frame( 'occurences' )
