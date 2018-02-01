@@ -10,12 +10,6 @@ server.secret_key = os.environ.get('secret_key', 'secret')
 app = dash.Dash(name = __name__, server = server)
 app.config.supress_callback_exceptions = True
 dic = pickle.load( open( './data/WRF_extract_GFDL_1970-2100_multiloc_dod.p', "rb" ) )
-# links = {
-#     'Fairbanks' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_FAI.csv',
-#     'Greely' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Greelyv2.csv',
-#     'Coldfoot' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Greelyv2.csv',
-#     'Whitehorse' : 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Greelyv2.csv'
-    # }
 
 temp = ('C1 : 0 to -25','C2 : -25.1 to -50','C3 : colder than -50')
 values = (0 , -25 , -40 )
@@ -25,7 +19,7 @@ app.layout = html.Div([
    html.Div(
         [
             html.H1(
-                'WRF Temperature Exploration for DOD project - Fairbanks location',
+                'WRF Temperature Exploration for DOD project',
                 className='eight columns',
             ),
             html.Img(
