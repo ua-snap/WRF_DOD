@@ -11,7 +11,7 @@ app.config.supress_callback_exceptions = True
 
 
 csv = 'https://www.snap.uaf.edu/webshared/jschroder/WRF_extract_GFDL_1970-2100_Fairbanksv2.csv'
-out_fn = '/workspace/Shared/Users/jschroder/TMP/WRF_extract_GFDL_1970-2100_FAI.csv'
+
 df = pd.read_csv(csv,index_col = 0)
 df.index = pd.to_datetime(df.index)
 temp = ('C1 : 0 to -25','C2 : -25.1 to -50','C3 : colder than -50')
