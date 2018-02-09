@@ -10,6 +10,8 @@ server.secret_key = os.environ.get('secret_key', 'secret')
 app = dash.Dash(name = __name__, server = server)
 app.config.supress_callback_exceptions = True
 dic = pickle.load( open( './data/WRF_extract_GFDL_1970-2100_multiloc_dod.p', "rb" ) )
+df2 = pd.read_csv('./data/truth.csv',index_col=0)
+df2.index = pd.to_datetime( df2.index )
 
 temp = ('C1 : 0 to -25','C2 : -25.1 to -50','C3 : colder than -50')
 values = (0 , -25 , -40 )
@@ -73,16 +75,23 @@ app.layout = html.Div([
 def update_graph(nb_days, temperature, location):
 
     df = dic[ location ]
-    print(df)
     df.index = pd.to_datetime( df.index )
     x = df[df.rolling( int( nb_days ))[ 'max' ].max() <= temperature ]
     dff = x.groupby( x.index.year )[ 'max' ].count().to_frame( 'occurences' )
+
+    z  = df2[df2.rolling( int( nb_days ))[ 'max' ].max() <= temperature ]
+    dff2 = z.groupby( z.index.year )[ 'max' ].count().to_frame( 'occurences' )
 
 
     return {
         'data': [go.Bar(
             x=dff.index,
             y=dff['occurences']
+        ),
+                go.Scatter(
+            x=dff2.index,
+            y=dff2['occurences'],
+            mode='markers'
         )],
         'layout': go.Layout(
             xaxis={
