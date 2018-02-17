@@ -73,24 +73,42 @@ app.layout = html.Div([
      dash.dependencies.Input('location', 'value')])
 
 def update_graph(nb_days, temperature, location):
+    def rolling_count_serie(serie , temperature , nb_days):
+        ct = 0
+        ls = []
+        for i in serie :
+            if i <= temperature and ct < nb_days :
+                ct +=1
+            elif ct == nb_days :
+                ct = 1
+            else :
+                ct = 0
 
-    df = dic[ location ]
+            ls.append(ct)
+        return ls
+
+    df = dic[ location ].copy()
+
     df.index = pd.to_datetime( df.index )
-    x = df[df.rolling( int( nb_days ))[ 'max' ].max() <= temperature ]
-    dff = x.groupby( x.index.year )[ 'max' ].count().to_frame( 'occurences' )
+    df['count'] = rolling_count_serie(df['max'], temperature , int(nb_days))
 
-    z  = df2[df2.rolling( int( nb_days ))[ 'max' ].max() <= temperature ]
-    dff2 = z.groupby( z.index.year )[ 'max' ].count().to_frame( 'occurences' )
+    dff = df[ df['count'] == int(nb_days) ]
+    dff = dff.groupby( dff.index.year ).count()
+
+
+    df2['count'] = rolling_count_serie(df2['max'], temperature , int(nb_days))
+    dff2 = df2[ df2['count'] == int(nb_days) ]
+    dff2 = dff2.groupby( dff2.index.year ).count()
 
 
     return {
         'data': [go.Bar(
             x=dff.index,
-            y=dff['occurences']
+            y=dff['count']
         ),
                 go.Scatter(
             x=dff2.index,
-            y=dff2['occurences'],
+            y=dff2['count'],
             mode='markers'
         )],
         'layout': go.Layout(
