@@ -13,6 +13,7 @@ dic = pickle.load( open( './data/WRF_extract_GFDL_1970-2100_multiloc_dod.p', "rb
 df2 = pd.read_csv('./data/truth.csv',index_col=0)
 df2.index = pd.to_datetime( df2.index )
 
+
 temp = ('C1 : 0 to -25','C2 : -25.1 to -50','C3 : colder than -50')
 values = (0 , -25 , -40 )
 
@@ -99,6 +100,7 @@ def update_graph(nb_days, temperature, location):
     df2['count'] = rolling_count_serie(df2['max'], temperature , int(nb_days))
     dff2 = df2[ df2['count'] == int(nb_days) ]
     dff2 = dff2.groupby( dff2.index.year ).count()
+    dff2 = dff2.loc[1970:]
 
 
     return {
@@ -114,6 +116,7 @@ def update_graph(nb_days, temperature, location):
         'layout': go.Layout(
             xaxis={
                 'title': 'Years',
+                'autorange':True,
                 },
             yaxis={
                 'title': 'Number of occurences',
