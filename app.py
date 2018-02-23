@@ -10,8 +10,8 @@ server.secret_key = os.environ.get('secret_key', 'secret')
 app = dash.Dash(name = __name__, server = server)
 app.config.supress_callback_exceptions = True
 dic = pickle.load( open( './data/WRF_extract_GFDL_1970-2100_multiloc_dod.p', "rb" ) )
-df2 = pd.read_csv('./data/truth.csv',index_col=0)
-df2.index = pd.to_datetime( df2.index )
+df_greely_historical = pd.read_csv('./data/truth.csv',index_col=0)
+df_greely_historical.index = pd.to_datetime( df_greely_historical.index )
 
 
 temp = ('C1 : 0 to -25','C2 : -25.1 to -50','C3 : colder than -50')
@@ -97,37 +97,37 @@ def update_graph(nb_days, temperature, location):
     dff = dff.groupby( dff.index.year ).count()
 
 
-    df2['count'] = rolling_count_serie(df2['max'], temperature , int(nb_days))
-    dff2 = df2[ df2['count'] == int(nb_days) ]
-    dff2 = dff2.groupby( dff2.index.year ).count()
-    dff2 = dff2.loc[1970:]
+    df_greely_historical['count'] = rolling_count_serie(df_greely_historical['max'], temperature , int(nb_days))
+    df_hist = df_greely_historical[ df_greely_historical['count'] == int(nb_days) ]
+    df_hist = df_hist.groupby( df_hist.index.year ).count()
+    df_hist = df_hist.loc[1970:]
 
-   if location == 'Greely' :
-       return {
+    if location == 'Greely' :
+        return {
            'data': [go.Bar(
-               x=dff.index,
-               y=dff['count'],
+               x = dff.index,
+               y = dff['count'],
                name = 'WRF modeled'
            ),
-                   go.Scatter(
-               x=dff2.index,
-               y=dff2['count'],
-               mode='markers',
+                    go.Scatter(
+               x = dff.index,
+               y = df_hist['count'],
+               mode = 'markers',
                name = 'Greely historical'
            )],
            'layout': go.Layout(
-               xaxis={
-                   'title': 'Years',
-                   'autorange':True,
-                   },
+               xaxis=dict(
+                   title =  'Years',
+                   range = [1969,2101],
+                   ),
                yaxis={
                    'title': 'Number of occurences',
                    },
                margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
                hovermode='closest'
            )
-       }
-      else : 
+        }
+    else :
         return {
            'data': [go.Bar(
                x=dff.index,
@@ -145,8 +145,8 @@ def update_graph(nb_days, temperature, location):
                margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
                hovermode='closest'
            )
-       }
-         
+        }
+
 
 
 if __name__ == '__main__':
