@@ -102,29 +102,51 @@ def update_graph(nb_days, temperature, location):
     dff2 = dff2.groupby( dff2.index.year ).count()
     dff2 = dff2.loc[1970:]
 
-
-    return {
-        'data': [go.Bar(
-            x=dff.index,
-            y=dff['count']
-        ),
-                go.Scatter(
-            x=dff2.index,
-            y=dff2['count'],
-            mode='markers'
-        )],
-        'layout': go.Layout(
-            xaxis={
-                'title': 'Years',
-                'autorange':True,
-                },
-            yaxis={
-                'title': 'Number of occurences',
-                },
-            margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
-            hovermode='closest'
-        )
-    }
+   if location == 'Greely' :
+       return {
+           'data': [go.Bar(
+               x=dff.index,
+               y=dff['count'],
+               name = 'WRF modeled'
+           ),
+                   go.Scatter(
+               x=dff2.index,
+               y=dff2['count'],
+               mode='markers',
+               name = 'Greely historical'
+           )],
+           'layout': go.Layout(
+               xaxis={
+                   'title': 'Years',
+                   'autorange':True,
+                   },
+               yaxis={
+                   'title': 'Number of occurences',
+                   },
+               margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
+               hovermode='closest'
+           )
+       }
+      else : 
+        return {
+           'data': [go.Bar(
+               x=dff.index,
+               y=dff['count'],
+               name = 'WRF modeled'
+           )],
+           'layout': go.Layout(
+               xaxis={
+                   'title': 'Years',
+                   'autorange':True,
+                   },
+               yaxis={
+                   'title': 'Number of occurences',
+                   },
+               margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
+               hovermode='closest'
+           )
+       }
+         
 
 
 if __name__ == '__main__':
