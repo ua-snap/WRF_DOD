@@ -12,18 +12,20 @@ app.config.supress_callback_exceptions = True
 
 #relies on pickle file here, might want to change to JSON
 dic = pickle.load( open( './data/WRF_extract_GFDL_1970-2100_multiloc_dod.p', "rb" ) )
+greely_qm = pd.read_csv( './data/tasmax_wrf_qm_fortgreely_1970-2100.csv', index_col=0, parse_dates=True) # matt QMapped the max data...
+greely_qm.columns = ['max']
+dic['Greely'] = greely_qm
 
 #the truth has been sent by email to Nancy and contains only Greely
-df_greely_historical = pd.read_csv('./data/truth.csv',index_col=0)
-df_greely_historical.index = pd.to_datetime( df_greely_historical.index )
-
+df_greely_historical = pd.read_csv('./data/truth.csv',index_col=0, parse_dates=True )
+# df_greely_historical.index = pd.to_datetime( df_greely_historical.index )
 
 app.css.append_css({'external_url': 'https://cdn.rawgit.com/plotly/dash-app-stylesheets/2d266c578d2a6e8850ebce48fdb52759b2aef506/stylesheet-oil-and-gas.css'})
 app.layout = html.Div([
    html.Div(
         [
             html.H1(
-                'WRF Temperature Exploration for DOD project',
+                'WRF Temperature Explorer -- DOD Ft.Wainwright Project',
                 className='eight columns',
             ),
             html.Img(
@@ -128,7 +130,8 @@ def update_graph(nb_days, temperature, location):
                    'title': 'Number of occurences',
                    },
                margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
-               hovermode='closest'
+               hovermode='closest',
+               showlegend=True
            )
         }
     else : #without Greely just display bars showing amount of days
@@ -147,7 +150,8 @@ def update_graph(nb_days, temperature, location):
                    'title': 'Number of occurences',
                    },
                margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
-               hovermode='closest'
+               hovermode='closest',
+               showlegend=True
            )
         }
 
