@@ -1,2 +1,3 @@
-Draft hosted on Heroku
-https://stark-beyond-94184.herokuapp.com/
+application currently hosted on Heroku:
+	https://wrf-dod-app.herokuapp.com/
+	
