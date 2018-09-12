@@ -24,8 +24,8 @@ app.css.append_css({'external_url': 'https://cdn.rawgit.com/plotly/dash-app-styl
 app.layout = html.Div([
    html.Div(
         [
-            html.H1(
-                'WRF Temperature Explorer -- DOD Ft.Wainwright Project',
+            html.H3(
+                'WRF Projected Temperature Explorer -- DOD Ft. Wainwright',
                 className='eight columns',
             ),
             html.Img(
@@ -70,12 +70,12 @@ app.layout = html.Div([
          dcc.Graph(id='indicator-graphic'),
      ],className='eleven columns')
  ],className='ten columns offset-by-one')
+
 @app.callback(
     dash.dependencies.Output('indicator-graphic', 'figure'),
     [dash.dependencies.Input('nb_days', 'value'),
      dash.dependencies.Input('temperature', 'value'),
      dash.dependencies.Input('location', 'value')])
-
 def update_graph(nb_days, temperature, location):
     def rolling_count_serie(serie , temperature , nb_days):
         '''This function is a non rolling window method, value 1 for number of days obviously doesn't work
@@ -102,6 +102,7 @@ def update_graph(nb_days, temperature, location):
     dff = dff.groupby( dff.index.year ).count()
 
     #Dealing with historical CSV file
+    print(rolling_count_serie( df_greely_historical[ 'max' ], temperature , int( nb_days )))
     df_greely_historical['count'] = rolling_count_serie( df_greely_historical[ 'max' ], temperature , int( nb_days ))
     df_hist = df_greely_historical[ df_greely_historical[ 'count' ] == int( nb_days ) ]
     df_hist = df_hist.groupby( df_hist.index.year ).count()
@@ -144,7 +145,7 @@ def update_graph(nb_days, temperature, location):
            'layout': go.Layout(
                xaxis={
                    'title': 'Years',
-                   'autorange':True,
+                   'range':[1969,2101],
                    },
                yaxis={
                    'title': 'Number of occurences',
