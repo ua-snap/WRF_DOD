@@ -10,13 +10,13 @@ server.secret_key = os.environ.get('secret_key', 'secret')
 app = dash.Dash(name = __name__, server = server)
 app.config.supress_callback_exceptions = True
 
-#relies on pickle file here, might want to change to JSON
+# relies on pickle file here, might want to change to JSON
 dic = pickle.load( open( './data/WRF_extract_GFDL_1970-2100_multiloc_dod.p', "rb" ) )
-greely_qm = pd.read_csv( './data/tasmax_wrf_qm_fortgreely_1970-2100.csv', index_col=0, parse_dates=True) # matt QMapped the max data...
-greely_qm.columns = ['max']
-dic['Greely'] = greely_qm
+greely_qm = pd.read_csv( './data/tasmax_wrf_qm_fortgreely_1970-2100.csv', index_col=0, parse_dates=True ) # matt QMapped the max data...
+greely_qm.columns = [ 'max' ]
+dic[ 'Greely' ] = greely_qm # update with the new Greely QM data
 
-#the truth has been sent by email to Nancy and contains only Greely
+# the truth has been sent by email to Nancy and contains only Greely
 df_greely_historical = pd.read_csv('./data/truth.csv',index_col=0, parse_dates=True )
 # df_greely_historical.index = pd.to_datetime( df_greely_historical.index )
 
@@ -37,7 +37,7 @@ app.layout = html.Div([
                     'float': 'right',
                     'position': 'relative',
                 },
-            ),
+            ), 
         ],
         className='row'
     ),
@@ -77,6 +77,7 @@ app.layout = html.Div([
      dash.dependencies.Input('temperature', 'value'),
      dash.dependencies.Input('location', 'value')])
 def update_graph(nb_days, temperature, location):
+    
     def rolling_count_serie(serie , temperature , nb_days):
         '''This function is a non rolling window method, value 1 for number of days obviously doesn't work
         but it is okay for this purpose. Non rolling window was request by the group.'''
@@ -92,7 +93,8 @@ def update_graph(nb_days, temperature, location):
 
             ls.append(ct)
         return ls
-    #Dealing with the actual WRF outputs
+
+    # Dealing with the actual WRF outputs
     df = dic[ location ].copy()
 
     df.index = pd.to_datetime( df.index )
@@ -101,14 +103,14 @@ def update_graph(nb_days, temperature, location):
     dff = df[ df['count'] == int(nb_days) ]
     dff = dff.groupby( dff.index.year ).count()
 
-    #Dealing with historical CSV file
+    # Dealing with historical CSV file
     print(rolling_count_serie( df_greely_historical[ 'max' ], temperature , int( nb_days )))
     df_greely_historical['count'] = rolling_count_serie( df_greely_historical[ 'max' ], temperature , int( nb_days ))
     df_hist = df_greely_historical[ df_greely_historical[ 'count' ] == int( nb_days ) ]
     df_hist = df_hist.groupby( df_hist.index.year ).count()
     df_hist = df_hist.loc[1970:]
 
-    #we just have historical data for Greely so we only display if Greely is selected
+    # we just have historical data for Greely so we only display if Greely is selected
     if location == 'Greely' :
         return {
            'data': [go.Bar(
@@ -125,7 +127,7 @@ def update_graph(nb_days, temperature, location):
            'layout': go.Layout(
                xaxis=dict(
                    title =  'Years',
-                   range = [1969,2101], #there was some axes issues so hard coded
+                   range = [1969,2101], # there was some axes issues so hard coded
                    ),
                yaxis={
                    'title': 'Number of occurences',
@@ -135,7 +137,7 @@ def update_graph(nb_days, temperature, location):
                showlegend=True
            )
         }
-    else : #without Greely just display bars showing amount of days
+    else : # without Greely just display bars showing amount of days
         return {
            'data': [go.Bar(
                x=dff.index,
