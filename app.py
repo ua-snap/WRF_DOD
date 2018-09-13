@@ -46,7 +46,7 @@ app.layout = html.Div([
          html.Div([
              dcc.Dropdown(
                  id='nb_days',
-                 options=[{'label': 'Consecutive days : {}'.format(i), 'value': i} for i in range(1,10)], #consecutive days selection 
+                 options=[{'label': 'Consecutive days : {}'.format(i), 'value': i} for i in range(2,10)], #consecutive days selection 
                  value=2
              ),
          ],className='three columns'),
